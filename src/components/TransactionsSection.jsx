@@ -461,23 +461,33 @@ function TransactionsSection({
                   ) : null}
 
                   {group.items.map((item) => (
-                    <tr key={item.id}>
-                      <td className="date-cell">{formatDate(item.date)}</td>
-                      <td className="description-cell">{item.description}</td>
-                      <td className="category-cell">{item.category}</td>
-                      <td className="type-cell">
+                    <tr
+                      key={item.id}
+                      className={`transaction-row ${item.type}`}
+                    >
+                      <td className="date-cell" data-label="Date">
+                        {formatDate(item.date)}
+                      </td>
+                      <td className="description-cell" data-label="Description">
+                        {item.description}
+                      </td>
+                      <td className="category-cell" data-label="Category">
+                        {item.category}
+                      </td>
+                      <td className="type-cell" data-label="Type">
                         <span className={`pill ${item.type}`}>
                           {item.type === "expense" ? "Expenditure" : "Income"}
                         </span>
                       </td>
                       <td
+                        data-label="Amount"
                         className={`right amount amount-cell ${item.type}`}
                         title={formatCurrency(item.amount)}
                       >
                         {item.type === "expense" ? "-" : "+"}
                         {getDisplayAmount(item.amount)}
                       </td>
-                      <td className="action-cell">
+                      <td className="action-cell" data-label="Action">
                         {canManage ? (
                           <div className="action-actions">
                             <button

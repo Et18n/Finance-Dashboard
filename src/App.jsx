@@ -182,7 +182,12 @@ function App() {
 
   return (
     <main className="dashboard-shell">
-      <DashboardHeader role={role} onRoleChange={handleRoleChange} />
+      <DashboardHeader
+        role={role}
+        onRoleChange={handleRoleChange}
+        theme={theme}
+        onThemeToggle={handleThemeToggle}
+      />
 
       {isLoading ? (
         <p className="status-banner info">
