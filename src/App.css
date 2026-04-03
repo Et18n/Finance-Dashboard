@@ -124,6 +124,8 @@
   border: 1px solid var(--muted-border);
   border-radius: 999px;
   padding: 0.24rem;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
 }
 
 .role-toggle::before {
@@ -141,6 +143,8 @@
     transform 0.3s cubic-bezier(0.22, 0.8, 0.29, 1),
     background 0.2s ease;
   z-index: 0;
+  pointer-events: none;
+  will-change: transform;
 }
 
 .role-toggle[data-role="admin"]::before {
@@ -158,6 +162,7 @@
   padding: 0.42rem 0.86rem;
   cursor: pointer;
   font-weight: 600;
+  -webkit-tap-highlight-color: transparent;
   transition:
     background 0.2s ease,
     color 0.2s ease,
@@ -173,8 +178,12 @@
 }
 
 .role-toggle button:not(.active):hover {
-  background: var(--input-bg);
+  background: transparent;
   color: var(--text);
+}
+
+.role-toggle button:focus-visible {
+  box-shadow: none;
 }
 
 .summary-grid {
@@ -191,10 +200,43 @@
   box-shadow: var(--soft-shadow);
 }
 
+.summary-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 .summary-card p {
   margin: 0;
   color: var(--muted);
   font-weight: 600;
+}
+
+.summary-edit-btn {
+  border: 1px solid var(--muted-border);
+  background: var(--soft-button-bg);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 0.2rem 0.62rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.summary-edit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px -14px rgba(25, 42, 43, 0.7);
+  background: var(--input-bg);
+}
+
+.summary-edit-btn:active {
+  transform: translateY(0);
 }
 
 .summary-card h2 {

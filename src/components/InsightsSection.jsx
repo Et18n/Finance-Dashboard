@@ -146,6 +146,7 @@ function InsightsSection({ insights, transactions = [] }) {
                   />
                   <Tooltip
                     formatter={(value) => formatCurrency(value)}
+                    cursor={false}
                     contentStyle={{
                       borderRadius: "12px",
                       border: "1px solid #d8ccb4",
@@ -158,12 +159,14 @@ function InsightsSection({ insights, transactions = [] }) {
                     name="Income"
                     fill="#1e9b78"
                     radius={[4, 4, 0, 0]}
+                    activeBar={false}
                   />
                   <Bar
                     dataKey="expense"
                     name="Expense"
                     fill="#c46a4a"
                     radius={[4, 4, 0, 0]}
+                    activeBar={false}
                   />
                 </BarChart>
               </ResponsiveContainer>

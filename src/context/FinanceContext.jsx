@@ -3,9 +3,11 @@ import {
   fetchTransactions,
   saveTransactions,
 } from "../services/mockFinanceApi";
+import { openingBalance as seedOpeningBalance } from "../data/transactions";
 import FinanceContext from "./financeContextInstance";
 
 const ROLE_STORAGE_KEY = "finance-dashboard-role";
+const OPENING_BALANCE_STORAGE_KEY = "finance-dashboard-opening-balance";
 const DEFAULT_ROLE = "viewer";
 const DEFAULT_SORT_BY = "date-desc";
 const DEFAULT_GROUP_BY = "none";
@@ -33,9 +35,31 @@ function getStoredRole() {
   }
 }
 
+function getStoredOpeningBalance() {
+  if (typeof window === "undefined") {
+    return seedOpeningBalance;
+  }
+
+  try {
+    const storedOpeningBalance = localStorage.getItem(
+      OPENING_BALANCE_STORAGE_KEY,
+    );
+
+    if (storedOpeningBalance === null) {
+      return seedOpeningBalance;
+    }
+
+    const parsed = Number(storedOpeningBalance);
+    return Number.isFinite(parsed) ? parsed : seedOpeningBalance;
+  } catch {
+    return seedOpeningBalance;
+  }
+}
+
 function getInitialState() {
   return {
     role: getStoredRole(),
+    openingBalance: getStoredOpeningBalance(),
     transactions: [],
     filters: { ...DEFAULT_FILTERS },
     searchTerm: "",
@@ -171,6 +195,11 @@ function financeReducer(state, action) {
         ...state,
         role: action.payload,
       };
+    case "SET_OPENING_BALANCE":
+      return {
+        ...state,
+        openingBalance: action.payload,
+      };
     case "SET_FILTERS":
       return {
         ...state,
@@ -253,6 +282,21 @@ export function FinanceProvider({ children }) {
       // Ignore storage write failures to keep UI usable.
     }
   }, [state.role]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      localStorage.setItem(
+        OPENING_BALANCE_STORAGE_KEY,
+        String(state.openingBalance),
+      );
+    } catch {
+      // Ignore storage write failures to keep UI usable.
+    }
+  }, [state.openingBalance]);
 
   useEffect(() => {
     let isActive = true;
@@ -359,6 +403,7 @@ export function FinanceProvider({ children }) {
   const value = useMemo(
     () => ({
       role: state.role,
+      openingBalance: state.openingBalance,
       transactions: state.transactions,
       filteredTransactions,
       groupedTransactions,
@@ -371,6 +416,17 @@ export function FinanceProvider({ children }) {
       apiError,
       availableCategories,
       setRole: (role) => dispatch({ type: "SET_ROLE", payload: role }),
+      setOpeningBalance: (value) => {
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed)) {
+          return;
+        }
+
+        dispatch({
+          type: "SET_OPENING_BALANCE",
+          payload: Number(parsed.toFixed(2)),
+        });
+      },
       setFilters: (payload) => dispatch({ type: "SET_FILTERS", payload }),
       setSearchTerm: (value) =>
         dispatch({ type: "SET_SEARCH_TERM", payload: value }),

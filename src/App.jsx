@@ -3,11 +3,11 @@ import DashboardHeader from "./components/DashboardHeader";
 import InsightsSection from "./components/InsightsSection";
 import SpendingBreakdownChart from "./components/SpendingBreakdownChart";
 import SummaryCards from "./components/SummaryCards";
+import BalanceEditorModal from "./components/BalanceEditorModal";
 import TransactionEditorModal from "./components/TransactionEditorModal";
 import TransactionsSection from "./components/TransactionsSection";
 import TrendChart from "./components/TrendChart";
 import { useFinance } from "./context/useFinance";
-import { openingBalance } from "./data/transactions";
 import {
   exportTransactionsAsCsv,
   exportTransactionsAsJson,
@@ -44,6 +44,7 @@ const commonCategories = [
 function App() {
   const {
     role,
+    openingBalance,
     transactions,
     filteredTransactions,
     filters,
@@ -55,6 +56,7 @@ function App() {
     apiError,
     availableCategories,
     setRole,
+    setOpeningBalance,
     setFilters,
     setSearchTerm,
     setSortBy,
@@ -71,6 +73,7 @@ function App() {
     mode: "add",
     transaction: null,
   });
+  const [isBalanceEditorOpen, setIsBalanceEditorOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -78,12 +81,12 @@ function App() {
   }, [theme]);
 
   const summary = useMemo(
-    () => getFinancialSummary(transactions, openingBalance),
-    [transactions],
+    () => getFinancialSummary(transactions, isLoading ? 0 : openingBalance),
+    [transactions, openingBalance, isLoading],
   );
   const trendData = useMemo(
-    () => getBalanceTrend(transactions, openingBalance),
-    [transactions],
+    () => (isLoading ? [] : getBalanceTrend(transactions, openingBalance)),
+    [transactions, openingBalance, isLoading],
   );
   const expenseBreakdown = useMemo(
     () => getExpenseBreakdown(transactions),
@@ -137,7 +140,25 @@ function App() {
     setRole(nextRole);
     if (nextRole !== "admin") {
       closeEditor();
+      setIsBalanceEditorOpen(false);
     }
+  }
+
+  function openBalanceEditor() {
+    if (!canManage) {
+      return;
+    }
+
+    setIsBalanceEditorOpen(true);
+  }
+
+  function closeBalanceEditor() {
+    setIsBalanceEditorOpen(false);
+  }
+
+  function handleSaveOpeningBalance(amount) {
+    setOpeningBalance(amount);
+    closeBalanceEditor();
   }
 
   function handleSaveTransaction(payload) {
@@ -201,7 +222,11 @@ function App() {
 
       {apiError ? <p className="status-banner error">{apiError}</p> : null}
 
-      <SummaryCards summary={summary} />
+      <SummaryCards
+        summary={summary}
+        canManage={canManage}
+        onEditOpeningBalance={openBalanceEditor}
+      />
 
       <section className="visual-grid">
         <TrendChart data={trendData} />
@@ -241,6 +266,14 @@ function App() {
           categories={editorCategories}
           onClose={closeEditor}
           onSave={handleSaveTransaction}
+        />
+      ) : null}
+
+      {isBalanceEditorOpen ? (
+        <BalanceEditorModal
+          value={openingBalance}
+          onClose={closeBalanceEditor}
+          onSave={handleSaveOpeningBalance}
         />
       ) : null}
 

@@ -1,8 +1,19 @@
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import {
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Sector,
+  Tooltip,
+} from "recharts";
 import { categoryPalette } from "../data/transactions";
 import { compactCurrency } from "../utils/formatters";
 
 const fallbackColors = ["#de8850", "#247a86", "#7f9460", "#b75c72", "#7561a9"];
+
+function renderActiveSlice(props) {
+  return <Sector {...props} stroke="transparent" strokeWidth={0} />;
+}
 
 function SpendingBreakdownChart({ data }) {
   if (!data.length) {
@@ -46,12 +57,15 @@ function SpendingBreakdownChart({ data }) {
               innerRadius={66}
               outerRadius={96}
               dataKey="value"
-              strokeWidth={1}
-              stroke="#fff7e7"
+              strokeWidth={0}
+              stroke="transparent"
+              activeShape={renderActiveSlice}
             >
               {data.map((entry, index) => (
                 <Cell
                   key={entry.name}
+                  stroke="transparent"
+                  strokeWidth={0}
                   fill={
                     categoryPalette[entry.name] ??
                     fallbackColors[index % fallbackColors.length]

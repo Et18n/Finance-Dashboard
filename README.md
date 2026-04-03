@@ -4,7 +4,8 @@ A React + Vite dashboard for tracking personal income and expenses with charts, 
 
 ## Features
 
-- Summary cards for opening balance, income, expenses, and net position
+- Summary cards for total balance, income, and expenses
+- Admin-only base balance updates that flow into live total balance calculations
 - Balance trend chart and spending breakdown chart (Recharts)
 - Search, filter, sort, group, and paginate transactions
 - Export visible transactions as CSV or JSON
@@ -56,6 +57,7 @@ Then open the local URL shown by Vite (typically `http://localhost:5173`).
   - `finance-dashboard-transactions`
   - `finance-dashboard-role`
   - `finance-dashboard-theme`
+  - `finance-dashboard-opening-balance`
 
 To reset data, clear local storage for the app in your browser and reload.
 

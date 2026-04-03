@@ -1,6 +1,6 @@
 import { formatMonth } from "./formatters";
 
-export function getFinancialSummary(transactions, openingBalance) {
+export function getFinancialSummary(transactions, balanceAmount) {
   const totals = transactions.reduce(
     (acc, item) => {
       if (item.type === "income") {
@@ -14,16 +14,19 @@ export function getFinancialSummary(transactions, openingBalance) {
   );
 
   const net = totals.income - totals.expenses;
+  const normalizedBalance = Number.isFinite(Number(balanceAmount))
+    ? Number(balanceAmount)
+    : 0;
 
   return {
     income: totals.income,
     expenses: totals.expenses,
     net,
-    balance: openingBalance + net,
+    balance: normalizedBalance + net,
   };
 }
 
-export function getBalanceTrend(transactions, openingBalance) {
+export function getBalanceTrend(transactions, balanceAmount) {
   if (!transactions.length) {
     return [];
   }
@@ -32,10 +35,15 @@ export function getBalanceTrend(transactions, openingBalance) {
     (a, b) => new Date(a.date) - new Date(b.date),
   );
 
-  let runningBalance = openingBalance;
+  const normalizedBalance = Number.isFinite(Number(balanceAmount))
+    ? Number(balanceAmount)
+    : 0;
+
+  let runningBalance = normalizedBalance;
 
   return sorted.map((item) => {
-    runningBalance += item.type === "income" ? item.amount : -item.amount;
+    runningBalance +=
+      item.type === "income" ? Number(item.amount) : -Number(item.amount);
 
     return {
       date: item.date,

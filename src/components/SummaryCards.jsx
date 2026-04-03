@@ -1,13 +1,13 @@
 import { formatCurrency } from "../utils/formatters";
 
-function SummaryCards({ summary }) {
+function SummaryCards({ summary, canManage = false, onEditOpeningBalance }) {
   const cards = [
     {
       key: "balance",
       label: "Total Balance",
       value: summary.balance,
       tone: "neutral",
-      helper: "Includes opening balance and current net flow",
+      helper: "Includes your saved base balance and current net flow.",
     },
     {
       key: "income",
@@ -29,7 +29,18 @@ function SummaryCards({ summary }) {
     <section className="summary-grid">
       {cards.map((card) => (
         <article key={card.key} className={`summary-card ${card.tone} reveal`}>
-          <p>{card.label}</p>
+          <div className="summary-card-head">
+            <p>{card.label}</p>
+            {card.key === "balance" && canManage && onEditOpeningBalance ? (
+              <button
+                type="button"
+                className="summary-edit-btn"
+                onClick={onEditOpeningBalance}
+              >
+                Edit balance
+              </button>
+            ) : null}
+          </div>
           <h2>{formatCurrency(card.value)}</h2>
           <span>{card.helper}</span>
         </article>
